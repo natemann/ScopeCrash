@@ -40,7 +40,7 @@ let appReducer: Reducer<AppState, AppAction, Void> = .combine(
             case .dismiss:
                 state.addTextViewState = nil
                 return .none
-                
+
             case .textCompleted:
                 state.text = state.addTextViewState?.text ?? ""
 //                state.addTextViewState = nil
@@ -56,16 +56,39 @@ struct ContentView: View {
     var store: Store<AppState, AppAction>
 
 
+    @State var text: String = ""
+    @State var showTextView: Bool = false
+
+
+
     var body: some View {
-        WithViewStore(store) { viewStore in
+//        WithViewStore(store) { viewStore in
+//            VStack {
+//                Text(viewStore.text)
+//                Button.init("add text") {
+//                    viewStore.send(.showText)
+//                }
+//            }.sheet(
+//                isPresented: .constant(viewStore.addTextViewState != nil)) {
+//                    IfLetStore(self.store.scope(state: { $0.addTextViewState }, action: AppAction.addTextView), then: AddTextView.init(store:))
+//            }
+//        }
+
+        VStack {
+            Text(text)
+            Button(action: { self.showTextView = true }, label: { Text("Add Text") })
+        }.sheet(isPresented: $showTextView) {
             VStack {
-                Text(viewStore.text)
-                Button.init("add text") {
-                    viewStore.send(.showText)
+                Button(
+                    action: { self.showTextView = false },
+                    label: { Text("Add") })
+
+                Form {
+                    TextField(
+                        "",
+                        text: self.$text)
+
                 }
-            }.sheet(
-                isPresented: .constant(viewStore.addTextViewState != nil)) {
-                IfLetStore(self.store.scope(state: \.addTextViewState, action: AppAction.addTextView), then: AddTextView.init(store:))
             }
         }
     }
@@ -101,7 +124,7 @@ let addTextViewReducer = Reducer<AddTextViewState, AddTextViewAction, Void> { st
 
     case .dismiss:
         return .none
-        
+
     case .addText(let text):
         if !text.isEmpty {
             state.text = text
@@ -132,7 +155,7 @@ struct AddTextView: View {
                     TextField(
                         "",
                         text: viewStore.binding(
-                            get: \.text,
+                            get: { $0.text },
                             send: { .addText($0) }))
 
                 }
