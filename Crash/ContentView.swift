@@ -56,41 +56,41 @@ struct ContentView: View {
     var store: Store<AppState, AppAction>
 
 
-    @State var text: String = ""
-    @State var showTextView: Bool = false
+//    @State var text: String = ""
+//    @State var showTextView: Bool = false
 
 
 
     var body: some View {
-//        WithViewStore(store) { viewStore in
-//            VStack {
-//                Text(viewStore.text)
-//                Button.init("add text") {
-//                    viewStore.send(.showText)
-//                }
-//            }.sheet(
-//                isPresented: .constant(viewStore.addTextViewState != nil)) {
-//                    IfLetStore(self.store.scope(state: { $0.addTextViewState }, action: AppAction.addTextView), then: AddTextView.init(store:))
-//            }
-//        }
-
-        VStack {
-            Text(text)
-            Button(action: { self.showTextView = true }, label: { Text("Add Text") })
-        }.sheet(isPresented: $showTextView) {
+        WithViewStore(store) { viewStore in
             VStack {
-                Button(
-                    action: { self.showTextView = false },
-                    label: { Text("Add") })
-
-                Form {
-                    TextField(
-                        "",
-                        text: self.$text)
-
+                Text(viewStore.text)
+                Button.init("add text") {
+                    viewStore.send(.showText)
                 }
+            }.sheet(
+                isPresented: .constant(viewStore.addTextViewState != nil)) {
+                    IfLetStore(self.store.scope(state: { $0.addTextViewState }, action: AppAction.addTextView), then: AddTextView.init(store:))
             }
         }
+
+//        VStack {
+//            Text(text)
+//            Button(action: { self.showTextView = true }, label: { Text("Add Text") })
+//        }.sheet(isPresented: $showTextView) {
+//            VStack {
+//                Button(
+//                    action: { self.showTextView = false },
+//                    label: { Text("Add") })
+//
+//                Form {
+//                    TextField(
+//                        "",
+//                        text: self.$text)
+//
+//                }
+//            }
+//        }
     }
 }
 
